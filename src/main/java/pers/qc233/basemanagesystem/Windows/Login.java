@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pers.qc233.basemanagesystem.Controller.LoginController;
 import pers.qc233.basemanagesystem.Pojo.Result;
-import pers.qc233.basemanagesystem.Pojo.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,6 +36,7 @@ public class Login{
         panel.setLayout(null);
         // 用户名标签
         JLabel userLabel = new JLabel("用户名:");
+        userLabel.setFont(new Font("", Font.BOLD, 16));
         userLabel.setBounds(10,20,80,25);
         panel.add(userLabel);
 
@@ -46,7 +46,8 @@ public class Login{
         panel.add(userText);
 
         // 密码标签
-        JLabel passwordLabel = new JLabel("密码:");
+        JLabel passwordLabel = new JLabel("密   码:");
+        passwordLabel.setFont(new Font("", Font.BOLD, 16));
         passwordLabel.setBounds(10,50,80,25);
         panel.add(passwordLabel);
 
@@ -72,22 +73,32 @@ public class Login{
              @Override
              public void actionPerformed(ActionEvent e) {
                  String usernameT = username.getText();
+                 Result result;
                  String passwordT = String.valueOf(password.getPassword());
-                 final Result result = loginController.login(usernameT,passwordT);
-                 if (result.getCode() == 200){
-                    JOptionPane.showMessageDialog(
-                            null,
-                            result.getMsg(),
-                            "成功",
-                            JOptionPane.PLAIN_MESSAGE
-                    );
-                 }else {
+                 if ("".equals(usernameT) || "".equals(passwordT)){
                      JOptionPane.showMessageDialog(
                              null,
-                             result.getMsg(),
+                             "用户名或密码不能为空",
                              "失败",
                              JOptionPane.ERROR_MESSAGE
                      );
+                 }else {
+                     result = loginController.login(usernameT,passwordT);
+                     if (result.getCode() == 200){
+                         JOptionPane.showMessageDialog(
+                                 null,
+                                 result.getMsg(),
+                                 "成功",
+                                 JOptionPane.PLAIN_MESSAGE
+                         );
+                     }else {
+                         JOptionPane.showMessageDialog(
+                                 null,
+                                 result.getMsg(),
+                                 "失败",
+                                 JOptionPane.ERROR_MESSAGE
+                         );
+                     }
                  }
              }
          };
@@ -99,7 +110,7 @@ public class Login{
                  Result result;
                  String usernameT = username.getText();
                  String passwordT = String.valueOf(password.getPassword());
-                 if (usernameT == null || passwordT == null){
+                 if ("".equals(usernameT) || "".equals(passwordT)){
                      JOptionPane.showMessageDialog(
                              null,
                              "用户名或密码不能为空",
