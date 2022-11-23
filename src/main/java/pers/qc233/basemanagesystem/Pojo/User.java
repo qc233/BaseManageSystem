@@ -14,4 +14,5 @@ public class User {
     String password;
     Timestamp registerTime;
     Timestamp lastLoginTime;
+    int maxScore;
 }

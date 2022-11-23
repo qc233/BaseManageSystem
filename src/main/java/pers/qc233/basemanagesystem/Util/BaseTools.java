@@ -6,6 +6,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 public class BaseTools {
+    /**
+     * 将字符串进行SHA256算法加密
+     * @param str 原始字符串
+     * @return 加密字符串
+     */
     public static String getSHA(String str){
         MessageDigest messageDigest;
         String encodeStr = "";
@@ -20,10 +25,11 @@ public class BaseTools {
         }
         return encodeStr;
     }
+
     /**
      * 将byte转为16进制
-     * @param bytes
-     * @return
+     * @param bytes 初始字节信息
+     * @return 16进制数据
      */
     private static String byte2Hex(byte[] bytes){
         StringBuffer stringBuffer = new StringBuffer();
@@ -39,6 +45,11 @@ public class BaseTools {
         return stringBuffer.toString();
     }
 
+    /**
+     * 获取任意位数的随机字符串，包含a-z、A-Z、0-9以及 ’*‘ ’-‘ ’/‘ ’+’ ‘=’
+     * @param len 获取的随机字符串长度
+     * @return 随机字符串
+     */
     public static String getRandomStr(int len){
         String str="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/*-+=";
         Random random = new Random();

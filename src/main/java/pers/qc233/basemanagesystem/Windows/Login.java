@@ -1,10 +1,12 @@
 package pers.qc233.basemanagesystem.Windows;
 
 
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pers.qc233.basemanagesystem.Controller.LoginController;
 import pers.qc233.basemanagesystem.Pojo.Result;
+import pers.qc233.basemanagesystem.Pojo.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,11 +16,11 @@ import java.awt.event.ActionEvent;
 public class Login{
 
     @Autowired
-    LoginController loginController;
+    private LoginController loginController;
+    private JFrame frame = new JFrame("登录");
 
      public Login() throws HeadlessException {
          // 创建 JFrame 实例
-         JFrame frame = new JFrame("登录");
          frame.setSize(300, 180);
          frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -70,6 +72,7 @@ public class Login{
     }
     private AbstractAction onLogin(JTextField username, JPasswordField password){
          return new AbstractAction() {
+             @SneakyThrows
              @Override
              public void actionPerformed(ActionEvent e) {
                  String usernameT = username.getText();
@@ -91,6 +94,10 @@ public class Login{
                                  "成功",
                                  JOptionPane.PLAIN_MESSAGE
                          );
+//                         frame.setVisible(false);
+
+                         GameInfoPage page = new GameInfoPage((User) result.getDate());
+                         page.show();
                      }else {
                          JOptionPane.showMessageDialog(
                                  null,

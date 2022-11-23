@@ -28,19 +28,26 @@ public class UserServiceImpl implements UserService {
         if (selectUser == null){
             result.setCode(-1);
             result.setMsg("用户名不存在");
+            result.setDate(null);
         }else {
             String sha = BaseTools.getSHA(user.getPassword()+selectUser.getSalt());
             if (sha.equals(selectUser.getPassword())){
                 result.setCode(200);
                 result.setMsg("登陆成功");
+                LambdaQueryWrapper<User> rlqw = new LambdaQueryWrapper<>();
+                rlqw.select(User::getUsername, User::getMaxScore);
+                rlqw.eq(User::getId, selectUser.getId());
+                final User user1 = userDao.selectOne(rlqw);
+                result.setDate(user1);
                 selectUser.setLastLoginTime(new Timestamp(new Date().getTime()));
                 userDao.updateById(selectUser);
             }else {
                 result.setCode(403);
                 result.setMsg("密码错误");
+                result.setDate(null);
             }
         }
-        result.setDate(null);
+
         return result;
     }
 

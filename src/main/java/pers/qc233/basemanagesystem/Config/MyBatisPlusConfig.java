@@ -9,6 +9,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MyBatisPlusConfig {
 
+    /**
+     * 配置MyBatisPlus的分页查询功能
+     * @return
+     */
+
         @Bean
         public MybatisPlusInterceptor mPInterceptor(){
             MybatisPlusInterceptor mPInterceptor = new MybatisPlusInterceptor();
