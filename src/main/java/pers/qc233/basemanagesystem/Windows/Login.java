@@ -1,48 +1,130 @@
 package pers.qc233.basemanagesystem.Windows;
 
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
-public class Login extends Application {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import pers.qc233.basemanagesystem.Controller.LoginController;
+import pers.qc233.basemanagesystem.Pojo.Result;
+import pers.qc233.basemanagesystem.Pojo.User;
 
-    Scene loginPage;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
-    @Override
-    public void init() throws Exception {
-        VBox mainBox = new VBox();
+@Component
+public class Login{
 
-        HBox username = new HBox();
-        Label usernameL = new Label("用户名：");
-        TextField usernameT = new TextField();
-        username.getChildren().addAll(usernameL,usernameT);
+    @Autowired
+    LoginController loginController;
 
-        HBox password = new HBox();
-        Label passwordL = new Label("密码：");
-        TextField passwordT = new TextField();
-        password.getChildren().addAll(passwordL,passwordT);
+     public Login() throws HeadlessException {
+         // 创建 JFrame 实例
+         JFrame frame = new JFrame("登录");
+         frame.setSize(300, 180);
+         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        HBox login = new HBox();
-        Button loginB = new Button("登录");
-        login.getChildren().addAll(loginB);
+         // 构建面板
+         JPanel panel = new JPanel();
+         frame.add(panel);
+         // 为面板添加内容
+         placeComponents(panel);
 
-        mainBox.getChildren().addAll(username,password,login);
+         frame.setVisible(true);
+     }
 
-        this.loginPage = new  Scene(mainBox, 600, 800);
+    private void placeComponents(JPanel panel) {
+
+        panel.setLayout(null);
+        // 用户名标签
+        JLabel userLabel = new JLabel("用户名:");
+        userLabel.setBounds(10,20,80,25);
+        panel.add(userLabel);
+
+        // 输入用户名的文本域
+        JTextField userText = new JTextField(32);
+        userText.setBounds(100,20,165,25);
+        panel.add(userText);
+
+        // 密码标签
+        JLabel passwordLabel = new JLabel("密码:");
+        passwordLabel.setBounds(10,50,80,25);
+        panel.add(passwordLabel);
+
+        // 输入密码的文本域
+        JPasswordField passwordText = new JPasswordField(32);
+        passwordText.setBounds(100,50,165,25);
+        panel.add(passwordText);
+
+        // 创建登录按钮
+        JButton loginButton = new JButton("登录");
+        loginButton.addActionListener(onLogin(userText, passwordText));
+        loginButton.setBounds(10, 100, 80, 25);
+        panel.add(loginButton);
+
+        // 创建注册按钮
+        JButton registerButton = new JButton("注册");
+        registerButton.setBounds(195, 100, 80, 25);
+        registerButton.addActionListener(onRegister(userText, passwordText));
+        panel.add(registerButton);
     }
-
-    @Override
-
-    public void start(Stage stage) throws Exception {
-        stage.setScene(this.loginPage);
-        stage.show();
+    private AbstractAction onLogin(JTextField username, JPasswordField password){
+         return new AbstractAction() {
+             @Override
+             public void actionPerformed(ActionEvent e) {
+                 String usernameT = username.getText();
+                 String passwordT = String.valueOf(password.getPassword());
+                 final Result result = loginController.login(usernameT,passwordT);
+                 if (result.getCode() == 200){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            result.getMsg(),
+                            "成功",
+                            JOptionPane.PLAIN_MESSAGE
+                    );
+                 }else {
+                     JOptionPane.showMessageDialog(
+                             null,
+                             result.getMsg(),
+                             "失败",
+                             JOptionPane.ERROR_MESSAGE
+                     );
+                 }
+             }
+         };
     }
-    public void run(){
-        launch();
+    private AbstractAction onRegister(JTextField username, JPasswordField password){
+         return new AbstractAction() {
+             @Override
+             public void actionPerformed(ActionEvent e) {
+                 Result result;
+                 String usernameT = username.getText();
+                 String passwordT = String.valueOf(password.getPassword());
+                 if (usernameT == null || passwordT == null){
+                     JOptionPane.showMessageDialog(
+                             null,
+                             "用户名或密码不能为空",
+                             "失败",
+                             JOptionPane.ERROR_MESSAGE
+                     );
+                 }else {
+                     result = loginController.register(usernameT, passwordT);
+                     if(result.getCode() == 200){
+                         JOptionPane.showMessageDialog(
+                                 null,
+                                 result.getMsg(),
+                                 "成功",
+                                 JOptionPane.PLAIN_MESSAGE
+                         );
+                     }else {
+                         JOptionPane.showMessageDialog(
+                                 null,
+                                 result.getMsg(),
+                                 "失败",
+                                 JOptionPane.ERROR_MESSAGE
+                         );
+                     }
+                 }
+             }
+         };
     }
 }
