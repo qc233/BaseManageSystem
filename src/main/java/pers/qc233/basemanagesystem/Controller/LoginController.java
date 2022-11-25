@@ -1,7 +1,7 @@
 package pers.qc233.basemanagesystem.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import pers.qc233.basemanagesystem.Pojo.Result;
 import pers.qc233.basemanagesystem.Pojo.User;
 import pers.qc233.basemanagesystem.Service.UserService;
@@ -10,7 +10,7 @@ import pers.qc233.basemanagesystem.Util.BaseTools;
 import java.sql.Timestamp;
 import java.util.Date;
 
-@Service
+@Component
 public class LoginController {
     @Autowired
     private UserService userService;

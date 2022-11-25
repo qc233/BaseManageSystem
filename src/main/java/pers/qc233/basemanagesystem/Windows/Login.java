@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pers.qc233.basemanagesystem.Controller.LoginController;
+import pers.qc233.basemanagesystem.Controller.RecordController;
 import pers.qc233.basemanagesystem.Pojo.Result;
 import pers.qc233.basemanagesystem.Pojo.User;
 
@@ -17,6 +18,8 @@ public class Login{
 
     @Autowired
     private LoginController loginController;
+    @Autowired
+    private GameInfoPage page;
     private JFrame frame = new JFrame("登录");
 
      public Login() throws HeadlessException {
@@ -70,6 +73,8 @@ public class Login{
         registerButton.addActionListener(onRegister(userText, passwordText));
         panel.add(registerButton);
     }
+
+    // 登陆事件处理
     private AbstractAction onLogin(JTextField username, JPasswordField password){
          return new AbstractAction() {
              @SneakyThrows
@@ -94,9 +99,9 @@ public class Login{
                                  "成功",
                                  JOptionPane.PLAIN_MESSAGE
                          );
-//                         frame.setVisible(false);
+                         frame.setVisible(false);
 
-                         GameInfoPage page = new GameInfoPage((User) result.getDate());
+                         page.init((User) (result.getDate()));
                          page.show();
                      }else {
                          JOptionPane.showMessageDialog(
@@ -110,6 +115,7 @@ public class Login{
              }
          };
     }
+    // 注册时间处理
     private AbstractAction onRegister(JTextField username, JPasswordField password){
          return new AbstractAction() {
              @Override
