@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pers.qc233.basemanagesystem.Controller.LoginController;
-import pers.qc233.basemanagesystem.Controller.RecordController;
 import pers.qc233.basemanagesystem.Pojo.Result;
 import pers.qc233.basemanagesystem.Pojo.User;
 
@@ -22,9 +21,13 @@ public class Login{
     private GameInfoPage page;
     private JFrame frame = new JFrame("登录");
 
+    final int SCREEN_X = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+    final int SCREEN_Y = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+
      public Login() throws HeadlessException {
          // 创建 JFrame 实例
          frame.setSize(300, 180);
+         frame.setLocation((SCREEN_X-300)/2, (SCREEN_Y-180)/2);
          frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
          // 构建面板
@@ -93,12 +96,6 @@ public class Login{
                  }else {
                      result = loginController.login(usernameT,passwordT);
                      if (result.getCode() == 200){
-                         JOptionPane.showMessageDialog(
-                                 null,
-                                 result.getMsg(),
-                                 "成功",
-                                 JOptionPane.PLAIN_MESSAGE
-                         );
                          frame.setVisible(false);
 
                          page.init((User) (result.getDate()));
