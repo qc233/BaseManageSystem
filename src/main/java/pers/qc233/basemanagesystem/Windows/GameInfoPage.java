@@ -3,7 +3,6 @@ package pers.qc233.basemanagesystem.Windows;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import pers.qc233.basemanagesystem.Controller.LoginController;
 import pers.qc233.basemanagesystem.Controller.RecordController;
 import pers.qc233.basemanagesystem.Controller.UserController;
 import pers.qc233.basemanagesystem.Pojo.*;

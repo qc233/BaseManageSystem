@@ -1,6 +1,5 @@
 package pers.qc233.basemanagesystem;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -14,6 +13,5 @@ public class BaseManageSystemApplication{
         SpringApplicationBuilder builder = new SpringApplicationBuilder(BaseManageSystemApplication.class);
         ConfigurableApplicationContext context = builder.headless(false).web(WebApplicationType.NONE).run(args);
         Login login = context.getBean(Login.class);
-//        SpringApplication.run(BaseManageSystemApplication.class,args);
     }
 }
