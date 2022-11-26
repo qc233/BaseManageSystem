@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
                 result.setCode(200);
                 result.setMsg("登陆成功");
                 LambdaQueryWrapper<User> rlqw = new LambdaQueryWrapper<>();
-                rlqw.select(User::getUsername, User::getMaxScore);
+                rlqw.select(User::getId, User::getUsername, User::getMaxScore);
                 rlqw.eq(User::getId, selectUser.getId());
                 final User user1 = userDao.selectOne(rlqw);
                 result.setDate(user1);
@@ -68,6 +68,24 @@ public class UserServiceImpl implements UserService {
             result.setMsg("用户名已存在");
             result.setDate(null);
         }
+        return result;
+    }
+
+    @Override
+    public Result getUserById(User user) {
+        Result result = new Result();
+        result.setDate(userDao.selectById(user.getId()));
+        result.setCode(200);
+        result.setMsg("OK");
+        return result;
+    }
+
+    @Override
+    public Result update(User user) {
+        Result result = new Result();
+        result.setDate(userDao.updateById(user));
+        result.setMsg("OK");
+        result.setCode(200);
         return result;
     }
 }

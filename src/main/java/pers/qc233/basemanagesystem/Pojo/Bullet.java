@@ -12,4 +12,13 @@ public class Bullet {
     public int getMoveSpeed() {
         return moveSpeed;
     }
+
+    public int[] getPosition() {
+        return position;
+    }
+
+    public int move(){
+        this.position[1] -= moveSpeed;
+        return this.position[1];
+    }
 }

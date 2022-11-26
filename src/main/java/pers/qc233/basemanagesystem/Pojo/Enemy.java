@@ -9,14 +9,23 @@ public class Enemy {
     private int[] size;
 
     public Enemy(){
-        this.health = 5;
+        this.health = 1;
         this.moveSpeed = 2;
         this.position = new int[]{new Random().nextInt(350) + 50, 0};
-        this.size = new int[]{31, 31};
+        this.size = new int[]{10, 10};
     }
 
     public boolean injured(){
         this.health--;
         return this.health == 0;
+    }
+
+    public int move(){
+        this.position[1] += moveSpeed;
+        return this.position[1];
+    }
+
+    public int[] getPosition() {
+        return position;
     }
 }

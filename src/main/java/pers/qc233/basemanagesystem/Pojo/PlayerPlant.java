@@ -2,16 +2,16 @@ package pers.qc233.basemanagesystem.Pojo;
 
 public class PlayerPlant {
     private int score;
-    private final int maxHealth = 5;
+    private final int maxHealth = 10;
     private int health;
     private float moveSpeed;
     private int weaponLevel;
     private int position[];
-    final int[] SIZE = {41, 41};
+    final int[] SIZE = {20, 20};
 
     // 无参构造方法
     public PlayerPlant(){
-        this.health = 3;
+        this.health = this.maxHealth;
         this.moveSpeed = 5.0f;
         this.weaponLevel = 1;
         this.position = new int[]{225, 450};
@@ -20,7 +20,7 @@ public class PlayerPlant {
     // 增加分数
     public int addScore(int score){
         this.score += score;
-        return score;
+        return this.score;
     }
 
     // 控制玩家飞机移动
@@ -48,5 +48,9 @@ public class PlayerPlant {
     public int heal(){
         this.health += this.health == maxHealth ? 0 : 1;
         return this.health;
+    }
+
+    public int getHealth() {
+        return health;
     }
 }

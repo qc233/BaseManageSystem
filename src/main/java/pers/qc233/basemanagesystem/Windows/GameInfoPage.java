@@ -3,7 +3,9 @@ package pers.qc233.basemanagesystem.Windows;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pers.qc233.basemanagesystem.Controller.LoginController;
 import pers.qc233.basemanagesystem.Controller.RecordController;
+import pers.qc233.basemanagesystem.Controller.UserController;
 import pers.qc233.basemanagesystem.Pojo.*;
 import pers.qc233.basemanagesystem.Pojo.Record;
 
@@ -11,7 +13,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -28,13 +32,22 @@ public class GameInfoPage{
     private boolean isRight = false;
 
     private final GamePanel gamePanel = new GamePanel();
+    private final JLabel scoreValue = new JLabel(String.valueOf(0));
+    private final JLabel healthValue = new JLabel(String.valueOf(10));
+    private final JLabel maxScore = new JLabel();
+    private final JPanel gamePage = new JPanel();
+    private final JPanel infoPage = new JPanel();
 
-    private final PlayerPlant player = new PlayerPlant();
+
+    private PlayerPlant player = new PlayerPlant();
     private List<Enemy> enemies = new ArrayList<>();
     private List<Bullet> bullets = new ArrayList<>();
 
     @Autowired
     private RecordController recordController;
+
+    @Autowired
+    private UserController userController;
 
     class GamePanel extends JPanel{
         @Override
@@ -43,6 +56,12 @@ public class GameInfoPage{
             Graphics2D g2 =(Graphics2D) g;
             List<Shape> shapes = new ArrayList<>();
             shapes.add(new Ellipse2D.Float(player.getPosition()[0], player.getPosition()[1], 20, 20));
+            for (Bullet bullet : bullets){
+                shapes.add(new Ellipse2D.Float(bullet.getPosition()[0], bullet.getPosition()[1], 5, 5));
+            }
+            for (Enemy enemy : enemies){
+                shapes.add(new Ellipse2D.Float(enemy.getPosition()[0], enemy.getPosition()[1], 10, 10));
+            }
             for (Shape shape:shapes){
                 g2.fill(shape);
             }
@@ -56,6 +75,10 @@ public class GameInfoPage{
         @SneakyThrows
         @Override
         public void run() {
+
+            int fireCount = 0;
+            int enemyCount = 0;
+
             gameWindow.requestFocus();
             while (isGameRunning){
                 Thread.sleep(16);
@@ -64,7 +87,74 @@ public class GameInfoPage{
                 if(isLeft) player.move(Direction.LEFT);
                 if(isRight) player.move(Direction.RIGHT);
 
+                if (fireCount == 6){
+                    fireCount = 0;
+                    bullets.add(new Bullet(new int[]{player.getPosition()[0]+7, player.getPosition()[1]}));
+                }
+                bullets.removeIf(bullet -> bullet.move() < 10);
+                fireCount++;
+
+                if (enemyCount == 45){
+                    enemyCount = 0;
+                    enemies.add(new Enemy());
+                }
+                for (int i = 0; i < enemies.size(); i++) {
+                    Enemy enemy = enemies.get(i);
+                    if (enemy.move() > 700){
+                        enemies.remove(enemy);
+                        healthValue.setText(String.valueOf(player.injured()));
+                    }
+                }
+                enemyCount++;
+
+
+                for (int i = 0; i < enemies.size(); i++) {
+                    Enemy enemy = enemies.get(i);
+                    int[] ep = enemy.getPosition();
+                    for (int j = 0; j < bullets.size(); j++) {
+                        Bullet bullet = bullets.get(j);
+                        int[] bp = bullet.getPosition();
+
+                        if ((bp[0] > ep[0]&&bp[0]<ep[0]+10) && (bp[1]<ep[1] && bp[1]+10 > ep[1])){
+                            if (enemy.injured()){
+                                 scoreValue.setText(String.valueOf(player.addScore(ep[1] * 50 / 700)));
+                                enemies.remove(enemy);
+                            }
+                            bullets.remove(bullet);
+                            break;
+                        }
+
+                    }
+                }
+
                 gamePanel.repaint();
+                if (player.getHealth() == 0){
+                    Record record = new Record();
+                    record.setTime(new Timestamp(new Date().getTime()));
+                    record.setUsername(user.getUsername());
+                    record.setScore(player.addScore(0));
+
+                    isGameRunning = false;
+                    enemies = new ArrayList<>();
+                    bullets = new ArrayList<>();
+                    recordController.insertRecord(record);
+                    JOptionPane.showMessageDialog(
+                            null, "你的得分为"+String.valueOf(player.addScore(0)),
+                            "游戏结束",JOptionPane.PLAIN_MESSAGE
+                    );
+
+                    if (player.addScore(0) > user.getMaxScore()){
+                        user.setMaxScore(player.addScore(0));
+                        userController.update(user);
+                    }
+
+                    player = new PlayerPlant();
+                    user = userController.getUserById(user);
+                    maxScore.setText("最高得分：" + user.getMaxScore());
+
+                    gamePage.setVisible(false);
+                    infoPage.setVisible(true);
+                }
             }
         }
     }
@@ -76,9 +166,6 @@ public class GameInfoPage{
         gameWindow.setLocation((SCREEN_X-450)/2, (SCREEN_Y-700)/2);
         gameWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         gameWindow.addKeyListener(onKey());
-
-        JPanel gamePage = new JPanel();
-        JPanel infoPage = new JPanel();
 
         gamePage.setBounds(0,0,450,700);
         infoPage.setBounds(0,0,450,700);
@@ -101,7 +188,7 @@ public class GameInfoPage{
         infoPage.add(username);
 
         // 显示用户的最高得分
-        JLabel maxScore = new JLabel("最高得分：" + this.user.getMaxScore());
+        maxScore.setText("最高得分："+ user.getMaxScore());
         maxScore.setFont(new Font("", Font.BOLD, 24));
         maxScore.setVerticalAlignment(JLabel.TOP);
         maxScore.setHorizontalAlignment(JLabel.CENTER);
@@ -130,14 +217,12 @@ public class GameInfoPage{
         //--------------------------------游戏界面布局-------------------------------
 
         gamePanel.setBounds(0, 50, 450, 650);
-//        gamePage.addKeyListener(onKey());
         gamePage.add(gamePanel);
 
         // 显示当前得分
         JLabel scoreText = new JLabel("当前得分： ");
         scoreText.setBounds(10, 20, 100, 30);
         gamePage.add(scoreText);
-        JLabel scoreValue = new JLabel(String.valueOf(0));
         scoreValue.setBounds(110, 20, 50, 30);
         gamePage.add(scoreValue);
 
@@ -145,7 +230,6 @@ public class GameInfoPage{
         JLabel healthText = new JLabel("当前生命值： ");
         healthText.setBounds(290, 20, 100, 30);
         gamePage.add(healthText);
-        JLabel healthValue = new JLabel(String.valueOf(5));
         healthValue.setBounds(390, 20, 50, 30);
         gamePage.add(healthValue);
 
@@ -169,9 +253,10 @@ public class GameInfoPage{
                 String msg = "";
                 int i = 0;
                 for (Record record : (List<Record>) (result.getDate())) {
-                    String time = String.format("%ty年%<tm月%<td日 %tH:%tM", record.getTime());
+                    i++;
+                    String time = String.format("%ty年%<tm月%<td日", record.getTime());
                     msg += String.format(
-                            "第%d名：\t%s \t%s \t%s",
+                            "第%d名：\t%s \t%s \t%s \n",
                             i,record.getUsername(),record.getScore(),time
                     );
                 }
@@ -189,9 +274,8 @@ public class GameInfoPage{
             game.setVisible(true);
 
             Thread gameThread = new GameRunnable();
-                gameThread.start();
+            gameThread.start();
             isGameRunning = true;
-            System.out.println("gameThread are start");
         };
     }
 
