@@ -67,6 +67,7 @@ public class GameInfoPage{
         }
     }
 
+    // 处理逻辑帧
     class GameRunnable extends Thread{
 
         private int countTime;
@@ -113,8 +114,8 @@ public class GameInfoPage{
                     for (int j = 0; j < bullets.size(); j++) {
                         Bullet bullet = bullets.get(j);
                         int[] bp = bullet.getPosition();
-
-                        if ((bp[0] > ep[0]&&bp[0]<ep[0]+10) && (bp[1]<ep[1] && bp[1]+10 > ep[1])){
+                        // 判断子弹和敌人相撞
+                        if ((bp[0] > ep[0]-10&&bp[0]<ep[0]+20) && (bp[1]<ep[1] && bp[1]+10 > ep[1])){
                             if (enemy.injured()){
                                  scoreValue.setText(String.valueOf(player.addScore(ep[1] * 50 / 700)));
                                 enemies.remove(enemy);
